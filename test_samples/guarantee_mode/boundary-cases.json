@@ -1,0 +1,248 @@
+{
+  "frozen_at": "2026-11-02T11:23:54.136721+08:00",
+  "source": "user FIX-GUARANTEE-MODE-002 task; S01-S08 are engineering variants",
+  "confirmation_status": "pending_user_review",
+  "meaning": "Engineering candidate recognition only, no finding of legal effectiveness",
+  "cases": [
+    {
+      "id": "B01",
+      "title": "非目标主体",
+      "text": "甲向乙承诺承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "bc5cc6ea157464ce1f3134e287f52c36dcd6eefa453fd2ac244aca5b249d41dc",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "B02",
+      "title": "示例或引用",
+      "text": "本合同引用示例：丙承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "85ec4b14478761e28c37fc637c8bc08faedb32aa645881e12a465e166330bab3",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "B03",
+      "title": "冲突",
+      "text": "保证方式：一般保证。\n保证方式：连带责任保证。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "d4cc2dcb1e245aee76a8880598d554622d8bb63e08b28143016dabf6c78c8616",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": true,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "B04",
+      "title": "否定",
+      "text": "丙不承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "26e3c6a1ed24c4a8dcf124e7df84a51b7ec67f672bd4a69f4ab2c13547430ab3",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "B05",
+      "title": "条件",
+      "text": "如丙另行签署保证合同，则由丙承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "cc7133dfb51b534293aaa5262f854d90bd68493d435e02c6a186c3be2b6ec40d",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "B06",
+      "title": "示例与有效条款并存",
+      "text": "本合同说明部分引用示例：丙承担连带责任保证。\n\n正式约定：丙对乙的上述债务承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "275ef938a390dcd2967043e141661cfa53d7140cf7e4524bb3937dd96885dd09",
+      "allowed_classifications": [
+        "explicit_general",
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S01",
+      "title": "已标明不同保证人",
+      "text": "债权人：甲。\n债务人：乙。\n保证人：丁。\n甲承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丁"
+      },
+      "input_sha256": "c984bff3eb5af5890835e257e57fc909309b7754d498747f5405df4d1e7c5082",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S02",
+      "title": "同一保证人自然语言正例",
+      "text": "债权人：甲。\n债务人：乙。\n保证人：丁。\n丁对乙的上述债务承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丁"
+      },
+      "input_sha256": "dad0747e10a8e1cd16095e32f21f27530476a464ee05f044523d5ce76279f541",
+      "allowed_classifications": [
+        "explicit_general"
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S03",
+      "title": "跨行条件",
+      "text": "如丙另行签署保证合同，\n则由丙承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "59ff8423a0aacf9f97fbd5fd35f6028cc97d6ffd1fb14176860d5ca6d963173b",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S04",
+      "title": "跨行否定",
+      "text": "丙不\n承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "e3549b69a9079e3bc5f45e58c61bf298fadcdb37458c835ae08da092d5d247b4",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S05",
+      "title": "自然语言冲突",
+      "text": "丙承担一般保证责任。\n丙承担连带责任保证。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "adb09bd8036ab5bac844de5297d5f452b883ec97074587aa8b6d9af930b55be1",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": true,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S06",
+      "title": "跨行示例与有效条款",
+      "text": "示例：\n丙承担一般保证责任。\n\n正式约定：丙承担连带责任保证。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "72fda525d1361d62939aa0358a450e1ac6644e3b41e87bcd1499448d57f4ca95",
+      "allowed_classifications": [
+        "explicit_joint",
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S07",
+      "title": "条件固定字段不能当成明确约定",
+      "text": "保证方式：如丙另行签署保证合同，则由丙承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "34457bd7cc69c96571f0b16110095546c39708aafbf14e9f8db73a477f8cec65",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    },
+    {
+      "id": "S08",
+      "title": "否定固定字段不能当成明确约定",
+      "text": "保证方式：不承担一般保证责任。",
+      "roles": {
+        "creditor": "甲",
+        "debtor": "乙",
+        "expected_guarantor": "丙"
+      },
+      "input_sha256": "2a2d114220a6d607283e7c09e8e496333819f1ef16498d33c2598057d5a165bf",
+      "allowed_classifications": [
+        null
+      ],
+      "expected_conflict_prompt": false,
+      "manual_review_when_unclassified": true,
+      "confirmation_status": "pending_user_review"
+    }
+  ]
+}

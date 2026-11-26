@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="借款与担保合同辅助审查，本机处理、逐项复核、同次快照导出。">
+  <title>合同审查工作台 · 借款与担保</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="合同审查工作台首页"><span class="brand-icon">审</span><span>合同审查<span class="brand-sub">律师辅助工作台</span></span></a>
+    <div class="nav-label">审查流程</div>
+    <ol class="steps">
+      <li id="step-input" class="current"><span>01</span><div>导入合同<small>文本、图片或扫描 PDF</small></div></li>
+      <li id="step-confirm"><span>02</span><div>核对并确认<small>以确认文本作为审查依据</small></div></li>
+      <li id="step-review"><span>03</span><div>审查与复核<small>规则提示、AI 意见与证据</small></div></li>
+      <li id="step-export"><span>04</span><div>导出报告<small>Word / JSON / HTML</small></div></li>
+    </ol>
+    <div class="sidebar-bottom"><span class="connection-dot"></span> 本机服务<span class="small">合同文件由本机处理<br>AI 模式沿用现有服务配置</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><div class="breadcrumb">工作台 <span>/</span> 借款与担保</div><span class="local-tag">LOCAL · 浏览器版</span></header>
+    <section class="page-heading"><div><div class="eyebrow">CONTRACT REVIEW</div><h1>让每条意见，都有依据可查。</h1><p>核对原文，审阅意见，保留本次审查记录。</p></div><button id="sample" class="button secondary">载入虚构样本</button></section>
+    <div class="scope-note"><span class="note-icon">i</span><p>辅助审查须由律师复核。流程完成、未发现风险或引用匹配通过，均不表示合同安全；保证与抵押识别及法律解释仍有现存限制。</p></div>
+    <div id="alert" class="alert" role="status" aria-live="polite" hidden></div>
+    <section class="workspace">
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="panel-heading"><div><span class="section-number">01—02</span><h2 id="input-title">合同原文</h2></div><span id="input-status" class="pill">待输入</span></div>
+        <div class="import-row"><button id="import" class="button secondary">＋ 导入文件</button><input id="file" type="file" accept=".txt,.png,.jpg,.jpeg,.pdf" hidden><span>TXT · PNG · JPG · PDF<br><small>单个文件不超过 20 MB</small></span></div>
+        <div id="job-progress" class="job-progress" hidden><div><span id="job-message">正在处理…</span><button id="cancel" class="text-button" hidden>取消导入</button></div><progress id="progress" max="100" aria-label="文件处理进度"></progress></div>
+        <div class="editor-label"><label for="contract">可编辑审查文本</label><span id="char-count">0 字符</span></div>
+        <textarea id="contract" spellcheck="false" placeholder="在此粘贴合同原文，或导入合同文件。&#10;&#10;图片与 PDF 提取后，请重点核对金额、日期、利率、姓名及遗漏页面，再确认审查。"></textarea>
+        <div id="source-strip" class="source-strip" hidden><div><strong id="source-name"></strong><small id="source-status"></small></div><button id="show-source" class="text-button">查看来源记录 ↗</button></div>
+        <label id="partial-row" class="partial-row" hidden><input id="partial" type="checkbox"><span>已知悉来源存在失败或空白页。本次只审查当前已核对文本，完整合同仍须补充。</span></label>
+        <fieldset class="settings"><legend>审查设置</legend>
+          <div class="ai-connection"><strong id="ai-provider">DeepSeek · 正在读取配置</strong><p id="ai-config-message" aria-live="polite">密钥仅由本机后端读取。</p><div><button id="ai-refresh" class="text-button" type="button">刷新配置</button><button id="ai-test" class="text-button" type="button" disabled>测试连接</button><span>仅发送测试消息，可能产生少量API费用</span></div></div>
+          <label><input id="ai" type="checkbox"><span>启用 AI 辅助审查<small>确认文本将发送至 DeepSeek；默认仅本地规则，单次AI上限3万字符</small></span></label><label><input id="anonymized" type="checkbox"><span>本次输入已脱敏<small>用户声明，程序不会自动删除姓名等信息</small></span></label></fieldset>
+        <div class="input-actions"><button id="confirm" class="button secondary" disabled>确认本次文本</button><button id="review" class="button primary" disabled>开始审查 <span>→</span></button></div>
+        <p class="footnote" id="confirm-note">修改文本或审查设置后，需要重新确认和审查。</p>
+      </section>
+      <section class="panel results-panel" aria-labelledby="results-title">
+        <div class="panel-heading"><div><span class="section-number">03—04</span><h2 id="results-title">审查与复核</h2></div><span id="review-status" class="pill">等待审查</span></div>
+        <div class="export-bar"><span>导出本次报告</span><div><button data-export="word" class="button export-button" disabled>Word ↗</button><button data-export="json" class="button export-button" disabled>JSON</button><button data-export="html" class="button export-button" disabled>HTML</button></div></div>
+        <div class="stats"><div><strong id="local-count">—</strong><span>本地待核查</span></div><div><strong id="ai-count">—</strong><span>AI 意见</span></div><div><strong id="unmatched-count">—</strong><span>未匹配引用</span></div></div>
+        <div class="tabs" role="tablist" aria-label="审查内容"><button id="tab-local" role="tab" aria-selected="true" aria-controls="view-local" data-tab="local">本地提示</button><button id="tab-ai" role="tab" aria-selected="false" aria-controls="view-ai" data-tab="ai" tabindex="-1">AI 与证据</button><button id="tab-source" role="tab" aria-selected="false" aria-controls="view-source" data-tab="source" tabindex="-1">来源记录</button><button id="tab-messages" role="tab" aria-selected="false" aria-controls="view-messages" data-tab="messages" tabindex="-1">流程消息</button></div>
+        <div class="result-scroll">
+          <div id="view-local" role="tabpanel" aria-labelledby="tab-local" tabindex="0"><div class="empty"><div class="empty-icon">≡</div><h3>从确认原文开始</h3><p>完成审查后，这里展示本地待核查项。<br>每一条提示都需要结合合同与材料复核。</p></div></div>
+          <div id="view-ai" role="tabpanel" aria-labelledby="tab-ai" tabindex="0" hidden></div>
+          <div id="view-source" role="tabpanel" aria-labelledby="tab-source" tabindex="0" hidden></div>
+          <div id="view-messages" role="tabpanel" aria-labelledby="tab-messages" tabindex="0" hidden></div>
+        </div>
+        <div class="report-meta" id="report-meta">暂无审查快照 · 三种格式将使用同一报告编号与文本</div>
+      </section>
+    </section>
+    <footer>借款与担保合同辅助审查 Demo <span>记录仅保留在本机内存；重启服务或闲置 30 分钟后可能清除，请及时下载报告。</span></footer>
+  </main>
+</body>
+</html>

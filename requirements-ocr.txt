@@ -1,0 +1,7 @@
+# Local CPU OCR; models are bundled in this wheel, no runtime download.
+rapidocr-onnxruntime==1.4.4
+onnxruntime>=1.17,<2
+numpy>=1.26,<3
+opencv-python>=4.8,<6
+Pillow>=10,<13
+PyMuPDF>=1.24,<1.27

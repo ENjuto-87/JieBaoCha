@@ -1,0 +1,294 @@
+{
+  "package_name": "JieBaoCha_source_merged_20261126.zip",
+  "merged_date": "2026-11-26",
+  "baseline_merged": "Portfolio Freeze Build (FIX-003 + cross-line guards + GOLD-001 applicability gate)",
+  "file_count": 57,
+  "python_syntax_issues": [],
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "4f7f58204fb1a9acd1a3de66e1de1d0fb803b1f3a66e17d7e5af1124ef632937",
+      "bytes": 86
+    },
+    {
+      "path": "AI接口使用说明.md",
+      "sha256": "02d229a2842fda3bc9840c814018f7e4fa1b475b77b9048b36ebf02d003508fc",
+      "bytes": 5947
+    },
+    {
+      "path": "Windows手动验收表.md",
+      "sha256": "2b0854e31d0a66a86a6be70e1394255b5edb213aeda79c85d4c73c3beb2fde7a",
+      "bytes": 4127
+    },
+    {
+      "path": "address_rules.py",
+      "sha256": "ceabac4e30cf73e91838c0bdede62cee45382cbef527122eb6685c16d406aa92",
+      "bytes": 1138
+    },
+    {
+      "path": "ai_client.py",
+      "sha256": "cf4fe41848c10d653f7cc47a62515f90caa3ce84b5e5f810d0825747898b978c",
+      "bytes": 1991
+    },
+    {
+      "path": "ai_config.py",
+      "sha256": "a951e04e4ca45c58aa5e1d97dbf6ce3ee24ad9c26745748ef5fc8b263aa0236c",
+      "bytes": 6861
+    },
+    {
+      "path": "background_jobs.py",
+      "sha256": "f5452a8a788e9cb41820e61c7b051bca7e5a4cdd1e1bac1b53bbba234e583d97",
+      "bytes": 1426
+    },
+    {
+      "path": "check_config.py",
+      "sha256": "c6682a9a884aa69e2ade25dbd3af1d6b05cc79996900f375c409b17880bbb1ba",
+      "bytes": 1634
+    },
+    {
+      "path": "configure_ai.py",
+      "sha256": "33bb34027e10ab5e8dfa74beb55ce65c23e0e15df789031941a5a60e0b713064",
+      "bytes": 2480
+    },
+    {
+      "path": "contract_checker.py",
+      "sha256": "1f7e05aead0d7b4a92b55e93fe2093c10941eac5636e133bcf0eb509ad3ef53c",
+      "bytes": 22649
+    },
+    {
+      "path": "day11_address_regression.py",
+      "sha256": "a6d3a3edaafeddba01a50952d0cb89ca45a5569403713584cb613744bb0b2422",
+      "bytes": 3394
+    },
+    {
+      "path": "demo_gui.py",
+      "sha256": "200635f2bfa8be9862820e811638419b4cd4a000d767c56fd75441f531007b08",
+      "bytes": 24851
+    },
+    {
+      "path": "launch_demo.bat",
+      "sha256": "1b55a72049016948c57b2bbf344209caaed4c3742e79d0fef27dd1a003015cb9",
+      "bytes": 1953
+    },
+    {
+      "path": "launch_demo.py",
+      "sha256": "a2a82b589289e834da97432ee3383df27d0b66ccf1f5ae409ad527bacabb6834",
+      "bytes": 2600
+    },
+    {
+      "path": "make_example.py",
+      "sha256": "0fc3e0bdaa2dfaac744ca5f4b1b0d8cf0ba9912b8e51f126812f66accead79cc",
+      "bytes": 2443
+    },
+    {
+      "path": "ocr_engine.py",
+      "sha256": "9a465c5cc3f917aa59e7ecf5359ab71d519fe71a47970a1896076d60472b4e8f",
+      "bytes": 2441
+    },
+    {
+      "path": "reliability.py",
+      "sha256": "48631cc7671cb3ae143b02e749571130fad751f80c5feb83d9f688de185660bd",
+      "bytes": 2383
+    },
+    {
+      "path": "report_docx.py",
+      "sha256": "31cb992db8e72cb66f24df5911df1adf4ffbf4f69c40997522e6388bc7afb2c8",
+      "bytes": 8981
+    },
+    {
+      "path": "report_export.py",
+      "sha256": "5dce966812b600ed3ae14c2116ce18d2172fc69975375dee6d947fbe8d048e7d",
+      "bytes": 12263
+    },
+    {
+      "path": "requirements-ocr.txt",
+      "sha256": "1b8d5528f67b0dcb363497e35353d91249c02bee7d5381f249fa738dcc738d31",
+      "bytes": 193
+    },
+    {
+      "path": "requirements-tested.txt",
+      "sha256": "cd4eb67287de78b14b19710ca5a9d9491827641e2a99521fcf0a262eecf7cb5b",
+      "bytes": 387
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "9a57016c02d1fe8e97cbd9629663d226d3b64eb712adeeb10009165b176b058d",
+      "bytes": 36
+    },
+    {
+      "path": "review_display.py",
+      "sha256": "ab5d9739e74fed3d36d727811a0c74a289403f7a1c55fcae1bbc41c2b37c19af",
+      "bytes": 3735
+    },
+    {
+      "path": "review_service.py",
+      "sha256": "1b5adb320057fdf2225b3ada40f95ce146f34d76339f849c9ce39e4eaee907f9",
+      "bytes": 4516
+    },
+    {
+      "path": "run_checks.py",
+      "sha256": "a2c407db5a40d2705741bcc1e8ee2a2741fce908b5d9e543e5905bbcada4b86f",
+      "bytes": 1487
+    },
+    {
+      "path": "source_import.py",
+      "sha256": "9e9cc3cf06e4179c680fcf89db495ee42fe7d39ff96082d81e44e3fb790bc2fc",
+      "bytes": 8648
+    },
+    {
+      "path": "test_ai.py",
+      "sha256": "7dd6591c5dbff397d75bf2ddbbb9d4620c2763d8f7aaf18e454b8ff59ed8de55",
+      "bytes": 11067
+    },
+    {
+      "path": "test_guarantee_mode_boundaries.py",
+      "sha256": "8f375f24f27882e558d693b10c25c0af9d14497a51ae9c71f84341bcab5da9d5",
+      "bytes": 9883
+    },
+    {
+      "path": "test_guarantee_mode_regression.py",
+      "sha256": "c9ab8b27709281052ed694d919dcb5c40a59a800bc08cce1337b10b7639a1af8",
+      "bytes": 3561
+    },
+    {
+      "path": "test_gui.py",
+      "sha256": "7a2d41ab36ec6060ac0f9f53e2ce2151c14bf8824bcb6b6048e901a3851253d1",
+      "bytes": 6066
+    },
+    {
+      "path": "test_launchers.py",
+      "sha256": "098938748249cfb93d8131630f9717c225f315540c907045528e4392a7460929",
+      "bytes": 6647
+    },
+    {
+      "path": "test_ocr.py",
+      "sha256": "3c184038bc92b42146ed14939b242a390f2cff2175b219a52085e752ec816019",
+      "bytes": 7090
+    },
+    {
+      "path": "test_samples/guarantee_mode/GOLD-004-A-contract.txt",
+      "sha256": "a243e669a5c5d51ba0a03b302405f28344fac5984408c2a426cd5f2e569b2bb1",
+      "bytes": 221
+    },
+    {
+      "path": "test_samples/guarantee_mode/GOLD-004-B-contract.txt",
+      "sha256": "31ad84299cc7711abf77bc16e4305c781a0ce534e40f85abdce58bd2c7aab6e9",
+      "bytes": 248
+    },
+    {
+      "path": "test_samples/guarantee_mode/GOLD-004-original.json",
+      "sha256": "7e3d413c45dc8352b33c7370b5a549aeb4ee5f4ded294149bffc68f9101b4805",
+      "bytes": 6316
+    },
+    {
+      "path": "test_samples/guarantee_mode/boundary-cases.json",
+      "sha256": "99de68518d3e981d19eb770a3aef6da88dfaeb5081d9870ef14353a8c6632ad5",
+      "bytes": 8198
+    },
+    {
+      "path": "test_web.py",
+      "sha256": "30cf0e5ad56123449fa86ef9c49428d5fa98263691d23cc8779b64b13b425410",
+      "bytes": 13831
+    },
+    {
+      "path": "test_word.py",
+      "sha256": "0cf33ad5537559c90a8bc99651fe0a139a97b7437b14d907c6dea7624d02c0c6",
+      "bytes": 4299
+    },
+    {
+      "path": "verify_day1.py",
+      "sha256": "52f47e88c6bfbee6990a34a54d7eb04066e1c440e70b1cd6bda9dbc0a0cde860",
+      "bytes": 5697
+    },
+    {
+      "path": "verify_day3.py",
+      "sha256": "9a6e56092b1afef078c12f029f7a1fdf86e0ca0bf97500b42645ac4eb28ddd7a",
+      "bytes": 7398
+    },
+    {
+      "path": "verify_day4.py",
+      "sha256": "8f4f1b5e168073db98e44eecf4c64fb08f31f2d4c8925391b151ad51a39ea932",
+      "bytes": 8823
+    },
+    {
+      "path": "verify_day6.py",
+      "sha256": "86dc845018d67db158aefc8219c90de3cd3d6982b5c15b5ee90248e547310ef3",
+      "bytes": 3421
+    },
+    {
+      "path": "web/app.js",
+      "sha256": "95f93c2aee0da6c6319873fb2b6364f917aa1552ba8c8b8516106bbbd3ac7ba3",
+      "bytes": 18214
+    },
+    {
+      "path": "web/index.html",
+      "sha256": "5c59b6e1e5f5553ae75db44442369f8b892d3efc1dd9b2e17bee99d7fba7311d",
+      "bytes": 7474
+    },
+    {
+      "path": "web/style.css",
+      "sha256": "629b4a91f63f48b5fe3d1643be53025f37bde3a8c567ddc349d78242413e1d57",
+      "bytes": 11708
+    },
+    {
+      "path": "web_server.py",
+      "sha256": "3e905cd8442946c3be491a7ad529cd693e57b5a860f33c7399e1a7fe61e1ff0c",
+      "bytes": 25502
+    },
+    {
+      "path": "三分钟交付演示脚本.md",
+      "sha256": "9b12919692a0d906ba21427f8cacf9e877a2fe9ddd44b6eaef2545f7a0ca1833",
+      "bytes": 1910
+    },
+    {
+      "path": "交付使用说明.md",
+      "sha256": "f1e28b86b349c8f7efcdcf9b611580687830d8680c7f332ed929d9dc7759e47f",
+      "bytes": 5131
+    },
+    {
+      "path": "启动合同审查Demo.bat",
+      "sha256": "eba3173033d73766e76f81fcd5089453e080541ec0b18a24bd75ad93a37a1492",
+      "bytes": 410
+    },
+    {
+      "path": "启动网页版.bat",
+      "sha256": "8245988b9fd1a175bef19d41a40b586a519d735cc1ed4cd939d97b81dfe1b411",
+      "bytes": 406
+    },
+    {
+      "path": "启动问题修复说明.md",
+      "sha256": "ea249e57a78549e01b230b5ce586755a04f07114b1b16677f10aa1baf8a515ea",
+      "bytes": 3518
+    },
+    {
+      "path": "开源来源与许可.md",
+      "sha256": "3b262539444933a8634af1d0d7c1e58e01b2382ff42c314c4586a0626aa51792",
+      "bytes": 2230
+    },
+    {
+      "path": "最终验收记录模板.md",
+      "sha256": "9961ac17142b6aab649d9292ed3018b17b7fb7ea2e335c56c84b792f75854628",
+      "bytes": 1713
+    },
+    {
+      "path": "检查运行环境.bat",
+      "sha256": "9af776a193326d79e7932f9f4c385c0fb3023efa0d3daa9f738d3821d0e8b1b2",
+      "bytes": 408
+    },
+    {
+      "path": "模块交付说明.md",
+      "sha256": "41d017248d40bf30ed9d87014e60871550ef2ec99d7264e7c1a8bb421870289a",
+      "bytes": 9189
+    },
+    {
+      "path": "网页版使用说明.md",
+      "sha256": "c0037987842863701b67ce4c398a7de9987eaa832b75de246ea6ecede975a105",
+      "bytes": 6184
+    },
+    {
+      "path": "配置AI接口.bat",
+      "sha256": "0cf18f5186e011a39437ba01ad5d99a002b42460ae452aff5f1fbb3b76325507",
+      "bytes": 405
+    }
+  ]
+}
