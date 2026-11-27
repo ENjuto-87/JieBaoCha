@@ -23,7 +23,7 @@ def main():
     modules = [
         "verify_day1", "verify_day3", "verify_day4", "verify_day6",
         "test_guarantee_mode_regression", "test_guarantee_mode_boundaries",
-        "test_word", "test_ai",
+        "test_narrative_and_redlines", "test_word", "test_ai",
     ]
     if args.ocr:
         modules += ["test_ocr", "test_gui"]

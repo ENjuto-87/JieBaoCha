@@ -1,14 +1,14 @@
 {
   "package_name": "JieBaoCha_source_merged_20261126.zip",
-  "merged_date": "2026-11-26",
-  "baseline_merged": "Portfolio Freeze Build (FIX-003 + cross-line guards + GOLD-001 applicability gate)",
-  "file_count": 57,
+  "merged_date": "2026-11-27",
+  "baseline_merged": "Portfolio Freeze + Narrative Contracts & 4 Statutory Redlines",
+  "file_count": 58,
   "python_syntax_issues": [],
   "files": [
     {
       "path": ".gitignore",
-      "sha256": "4f7f58204fb1a9acd1a3de66e1de1d0fb803b1f3a66e17d7e5af1124ef632937",
-      "bytes": 86
+      "sha256": "c3344b2c7dedf4006b372b7330afb3e796a32a6256ade44644d59db61b0c15b1",
+      "bytes": 661
     },
     {
       "path": "AI接口使用说明.md",
@@ -22,8 +22,8 @@
     },
     {
       "path": "address_rules.py",
-      "sha256": "ceabac4e30cf73e91838c0bdede62cee45382cbef527122eb6685c16d406aa92",
-      "bytes": 1138
+      "sha256": "aec7259eb3f2c8809134b9966f883db319324b3097394625ea7976ff05f2c577",
+      "bytes": 1712
     },
     {
       "path": "ai_client.py",
@@ -52,8 +52,8 @@
     },
     {
       "path": "contract_checker.py",
-      "sha256": "1f7e05aead0d7b4a92b55e93fe2093c10941eac5636e133bcf0eb509ad3ef53c",
-      "bytes": 22649
+      "sha256": "9253b0cd0cf5481d4c60187b3825003770bb471332895c939e5f82e64c2c43d4",
+      "bytes": 30373
     },
     {
       "path": "day11_address_regression.py",
@@ -122,13 +122,13 @@
     },
     {
       "path": "review_service.py",
-      "sha256": "1b5adb320057fdf2225b3ada40f95ce146f34d76339f849c9ce39e4eaee907f9",
-      "bytes": 4516
+      "sha256": "c5dc90d02e022f646f3494e419393892f1ea54555408bda8747587aca91a601c",
+      "bytes": 4727
     },
     {
       "path": "run_checks.py",
-      "sha256": "a2c407db5a40d2705741bcc1e8ee2a2741fce908b5d9e543e5905bbcada4b86f",
-      "bytes": 1487
+      "sha256": "9e49d78053b8bd036a79df9dd0b19101c8ad73d938e2b75e3ffcc4195c1cfed7",
+      "bytes": 1518
     },
     {
       "path": "source_import.py",
@@ -142,13 +142,13 @@
     },
     {
       "path": "test_guarantee_mode_boundaries.py",
-      "sha256": "8f375f24f27882e558d693b10c25c0af9d14497a51ae9c71f84341bcab5da9d5",
-      "bytes": 9883
+      "sha256": "18a6266fd2bcf0fef9c370a8369b490528c2cfb12e026463dd5581ed0e5bf6c5",
+      "bytes": 9915
     },
     {
       "path": "test_guarantee_mode_regression.py",
-      "sha256": "c9ab8b27709281052ed694d919dcb5c40a59a800bc08cce1337b10b7639a1af8",
-      "bytes": 3561
+      "sha256": "05b649eb23aecf2837e5e34c15d16f4940d12d862efb6647cc751e2a627fc4e4",
+      "bytes": 3844
     },
     {
       "path": "test_gui.py",
@@ -159,6 +159,11 @@
       "path": "test_launchers.py",
       "sha256": "098938748249cfb93d8131630f9717c225f315540c907045528e4392a7460929",
       "bytes": 6647
+    },
+    {
+      "path": "test_narrative_and_redlines.py",
+      "sha256": "274a87d59023b1e2f103f7e4ace99d2ec6c1d2727b14db6cb86761917e6dcb5e",
+      "bytes": 8587
     },
     {
       "path": "test_ocr.py",

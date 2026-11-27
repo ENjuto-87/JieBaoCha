@@ -7,6 +7,8 @@ from contract_checker import (
     call_deepseek,
     check_contract,
     check_guarantee_terms,
+    check_statutory_redlines,
+    deduplicate_findings,
     inspect_guarantee_applicability,
     risk_rules,
     verify_evidence,
@@ -45,6 +47,8 @@ def review_contract(contract_text: str, use_ai: bool = True) -> dict:
             "risk_name": "送达地址",
             "risk_message": issue,
         })
+    result["local_findings"].extend(check_statutory_redlines(contract_text))
+    result["local_findings"] = deduplicate_findings(result["local_findings"])
     result["status"] = "local_only"
     result["messages"].append("本地规则审查已完成；规则提示和空结果均须人工核查。")
     guarantee_applicable, applicability_note = inspect_guarantee_applicability(contract_text)

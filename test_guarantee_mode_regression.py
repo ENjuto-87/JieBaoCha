@@ -29,8 +29,11 @@ class GuaranteeModeTests(unittest.TestCase):
             with self.subTest(name=name):
                 classify = getattr(contract_checker, 'recognize_explicit_guarantee_mode', lambda text: None)
                 self.assertEqual(classify(text), expected)
-                missing, _ = contract_checker.check_guarantee_terms(text)
-                self.assertEqual('保证方式' in missing, expected is None)
+                findings = [
+                    x for x in review_contract(text, use_ai=False)['local_findings']
+                    if x['risk_name'] == '保证方式'
+                ]
+                self.assertEqual(len(findings), 1 if expected is None else 0)
 
     def test_frozen_contracts(self):
         # Read verified project-local fixtures, preserving line endings exactly.
@@ -48,9 +51,15 @@ class GuaranteeModeTests(unittest.TestCase):
         for name, text in cases.items():
             with self.subTest(name=name):
                 self.assertEqual(classify(text), None if name == 'C' else 'explicit_general')
-                findings = review_contract(text, use_ai=False)['local_findings']
-                missing = any(x['risk_name'] == '保证方式' and '未找到' in x['risk_message'] for x in findings)
-                self.assertEqual(missing, name == 'C')
+                findings = [
+                    x for x in review_contract(text, use_ai=False)['local_findings']
+                    if x['risk_name'] == '保证方式'
+                ]
+                if name == 'C':
+                    self.assertEqual(len(findings), 1)
+                    self.assertIn('第686条', findings[0]['risk_message'])
+                else:
+                    self.assertEqual(findings, [])
 
     def test_conservative_cases(self):
         classify = getattr(contract_checker, 'recognize_explicit_guarantee_mode', lambda text: None)

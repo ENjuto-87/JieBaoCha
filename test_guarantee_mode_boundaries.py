@@ -143,7 +143,8 @@ class GuaranteeBoundaryTests(unittest.TestCase):
         names = [f['risk_name'] for f in res['local_findings']]
         for inapplicable in ('保证方式', '保证期间', '保证范围'):
             self.assertNotIn(inapplicable, names)
-        for general in ('主债权金额', '争议解决', '实现债权费用', '送达地址'):
+        self.assertNotIn('主债权金额', names)
+        for general in ('争议解决', '实现债权费用', '送达地址'):
             self.assertIn(general, names)
         self.assertTrue(any('未套用保证方式、保证期间及保证范围规则' in m for m in res['messages']))
 

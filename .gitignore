@@ -1,9 +1,42 @@
+# Credentials & local AI settings (NEVER commit)
 .ai-settings.json
 .ai-config-*
+.nonexistent-*
 .env
 .env.*
+
+# Virtual environments & Python cache
 .venv/
 venv/
+.runtime/
 __pycache__/
-.test-tmp/
 *.pyc
+.test-tmp/
+
+# Unrelated personal / proxy records & local backups
+AgentRoute-*/
+backups-*/
+FIX-*/
+DAY2-*/
+DAY3-*/
+GOLD-004-AB-day3/
+examples/
+练习样本/
+
+# Archives, local logs & generated test media
+*.zip
+*.bak
+*日志.txt
+*记录.json
+*记录.md
+!最终验收记录模板.md
+day2-*.md
+day3-*.md
+FIX-GUARANTEE-MODE-001-report.md
+GOLD-004-*.md
+GUARANTEE-MODE-*.md
+文件变更清单.md
+requirements-installed.txt
+contract.txt
+test_samples/*
+!test_samples/guarantee_mode/

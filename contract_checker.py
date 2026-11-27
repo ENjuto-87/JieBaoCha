@@ -10,32 +10,56 @@ from ai_client import completion
 
 GUARANTEE_ONLY_RULES = {"保证方式", "保证期间", "保证范围"}
 
+# 兼容“标签+冒号”与条文叙述型合同的要素语义正则（排除冒号后留空的空标题行）
+_ELEMENT_PATTERNS = {
+    "主债权金额": re.compile(
+        r"(?:主债权金额|借款本金|借款金额|贷款本金|贷款金额)(?!\s*[:：]\s*(?:$|\r|\n))"
+        r"|本金(?:人民币)?为\s*\S"
+        r"|(?:借款|出借)人民币\s*\S"
+    ),
+    "保证范围": re.compile(
+        r"(?:保证范围|担保范围)(?!\s*[:：]\s*(?:$|\r|\n))"
+        r"|(?:保证|担保)[^。；;\r\n]{0,15}?包括\s*\S"
+    ),
+    "保证期间": re.compile(
+        r"(?:保证期间|保证期限)(?!\s*[:：]\s*(?:$|\r|\n))"
+    ),
+    "送达地址": re.compile(
+        r"(?:送达地址|通讯地址)(?!\s*[:：]\s*(?:$|\r|\n))"
+        r"|有效送达"
+    ),
+}
+
+DEFAULT_GUARANTEE_MODE_MESSAGE = (
+    "未识别到明确保证方式（连带/一般保证）；按《民法典》第686条，未约定或约定不明的默认按一般保证处理，请人工核查原文。"
+)
+
 risk_rules = [
     {
         "name": "保证方式",
-        "keywords": ["一般保证", "连带责任保证"],
-        "message": "规则未识别到保证方式关键词，请人工核查原文"
+        "keywords": ["连带责任保证", "连带保证", "一般保证", "连带清偿"],
+        "message": DEFAULT_GUARANTEE_MODE_MESSAGE,
     },
     {
         "name": "保证期间",
-        "keywords": ["保证期间"],
-        "message": "规则未识别到保证期间关键词，请人工核查原文"
+        "keywords": ["保证期间", "保证期限"],
+        "message": "规则未识别到保证期间（或保证期限）约定，请人工核查原文",
     },
     {
         "name": "争议解决",
-        "keywords": ["人民法院", "仲裁委员会"],
-        "message": "规则未识别到争议解决关键词，请人工核查原文"
+        "keywords": ["人民法院", "仲裁委员会", "提起诉讼", "申请仲裁"],
+        "message": "规则未识别到争议解决关键词，请人工核查原文",
     },
     {
         "name": "实现债权费用",
-        "keywords": ["律师费", "诉讼费", "保全费"],
-        "message": "规则未识别到实现债权费用关键词，请人工核查原文"
+        "keywords": ["律师费", "诉讼费", "保全费", "实现债权的费用", "实现债权的一切费用"],
+        "message": "规则未识别到实现债权费用关键词，请人工核查原文",
     },
     {
         "name": "送达地址",
-        "keywords": ["送达地址","法律文书"],
-        "message": "规则未识别到送达地址关键词，请人工核查原文"
-    }
+        "keywords": ["送达地址", "通讯地址", "有效送达", "法律文书"],
+        "message": "规则未识别到送达地址相关约定，请人工核查原文",
+    },
 ]
 
 
@@ -200,7 +224,7 @@ def call_deepseek(contract_text, api_key, on_message=print, settings=None):
         return None
 
 
-_GUARANTEE_TOPIC_TERMS = ("一般保证", "连带责任保证", "连带保证", "保证方式", "保证期间", "保证范围")
+_GUARANTEE_TOPIC_TERMS = ("一般保证", "连带责任保证", "连带保证", "连带清偿", "保证方式", "保证期间", "保证期限", "保证范围")
 _GUARANTEE_RELATION_TERMS = ("保证人", "担保人", "提供保证", "保证担保", "保证合同", "保证责任", "承担保证", "作为保证")
 _GUARANTEE_EXISTENCE_NEGATION_RE = re.compile(
     r"(?:没有|并无|且无|均无|无|不存在|不设|未设|不提供|未提供|无需|无须|不涉及|不含)"
@@ -239,6 +263,13 @@ def inspect_guarantee_applicability(contract_text):
     )
 
 
+def _matches_rule(text, rule):
+    pattern = _ELEMENT_PATTERNS.get(rule["name"])
+    if pattern is not None:
+        return bool(pattern.search(text))
+    return any(keyword in text for keyword in rule["keywords"])
+
+
 def check_contract(text, rules):
     risks = []
     guarantee_applicable, _ = inspect_guarantee_applicability(text)
@@ -247,7 +278,9 @@ def check_contract(text, rules):
         if rule["name"] in GUARANTEE_ONLY_RULES and not guarantee_applicable:
             continue
         if rule["name"] == "保证方式":
-            _, review_reason, subject_prompts = _analyze_guarantee_mode(text)
+            mode, review_reason, subject_prompts = _analyze_guarantee_mode(text)
+            if mode is not None:
+                continue
             if review_reason:
                 if review_reason == "conflict":
                     message = "发现一般保证与连带责任保证的候选约定冲突，请人工核验适用主体、条款效力及优先顺序。"
@@ -257,18 +290,118 @@ def check_contract(text, rules):
                     message = "保证方式相关表述尚不能确认为目标保证人的明确约定，涉及主体、示例引用、否定或条件等识别边界，请人工核验。"
                 risks.append({"risk_name": rule["name"], "risk_message": message})
                 continue
-        found = any(
-            keyword in text
-            for keyword in rule["keywords"]
-        )
-
-        if not found:
             risks.append({
                 "risk_name": rule["name"],
-                "risk_message": rule["message"]
+                "risk_message": DEFAULT_GUARANTEE_MODE_MESSAGE,
+            })
+            continue
+
+        if not _matches_rule(text, rule):
+            risks.append({
+                "risk_name": rule["name"],
+                "risk_message": rule["message"],
             })
 
-    return risks
+    return deduplicate_findings(risks)
+
+
+_UPFRONT_DEDUCTION_A_RE = re.compile(
+    r"(?<!不得)(?<!禁止)(?<!严禁)(?<!不)(?<!未)(?:预先扣除|先期扣除|预扣利息|预扣本息)"
+    r"|(?<!不得)(?<!禁止)(?<!严禁)从(?:借款)?本金中[^\r\n]{0,20}?扣"
+)
+_UPFRONT_DEDUCTION_B_RE = re.compile(
+    r"实际[^\r\n]{0,10}?(?:划付|交付|发放)[^\r\n]{0,25}?仍按[^\r\n]{0,15}?(?:本金|计息)"
+)
+_LEX_COMMISSORIA_RE = re.compile(
+    r"(?P<asset>房产|不动产|抵押物|质押物|股权|质物|抵押财产)"
+    r"(?P<mid>[^\r\n]{0,40}?)"
+    r"(?P<outcome>所有权直接归|直接归|直接作价抵偿|归(?!(?:抵押人|出质人|质押人)所有)[^\r\n]{0,10}?所有)"
+)
+_LEX_COMMISSORIA_PROHIBITION_RE = re.compile(r"(?:不得|禁止|严禁)(?:约定)?$")
+_DUAL_DISPUTE_SELECTIVE_RE = re.compile(r"(?:或者|或|均可|亦可|也可|任选|择一)")
+_DUAL_DISPUTE_COURT_RE = re.compile(r"(?<!不得向)(?<!禁止向)(?:起诉|诉讼|人民法院)")
+_UNCLEAR_GUARANTEE_PERIOD_RE = re.compile(
+    r"保证(?:期间|期限)[^。；;\r\n]{0,30}?(?:直至|至)[^。；;\r\n]{0,20}?(?:清偿|还清|履行完毕|付清)"
+)
+
+
+def check_statutory_redlines(contract_text):
+    """在段落/单句粒度下运行 4 条高确定性法定红线检测，避免跨段落误伤。"""
+    findings = []
+    hit_upfront = False
+    hit_commissoria = False
+    hit_dual_dispute = False
+    hit_unclear_period = False
+
+    for raw_para in re.split(r"\r?\n+", contract_text):
+        para = re.sub(r"[ \t]+", "", raw_para.strip())
+        if not para:
+            continue
+
+        if not hit_upfront and (_UPFRONT_DEDUCTION_A_RE.search(para) or _UPFRONT_DEDUCTION_B_RE.search(para)):
+            hit_upfront = True
+            findings.append({
+                "risk_name": "疑似砍头息（预先扣除本息/费用）",
+                "risk_message": "检测到疑似预先扣除本息或按虚增本金计息表述。依据《民法典》第670条，借款的利息不得预先在本金中扣除；预先扣除的，应当按照实际借款数额返还借款并计算利息，请核查本金条款与放款流水。",
+            })
+
+        if not hit_commissoria:
+            for m in _LEX_COMMISSORIA_RE.finditer(para):
+                prefix = para[max(0, m.start() - 10):m.start("outcome")]
+                if _LEX_COMMISSORIA_PROHIBITION_RE.search(prefix) or any(w in prefix for w in ("不得", "禁止", "严禁")):
+                    continue
+                hit_commissoria = True
+                findings.append({
+                    "risk_name": "疑似流押/流质条款",
+                    "risk_message": "检测到疑似流押或流质约定。依据《民法典》第401、428条，流押/流质约定无效，债权人仅可依法折价或以拍卖、变卖价款优先受偿，请修改担保物处置条款。",
+                })
+                break
+
+        if not hit_dual_dispute:
+            if "仲裁" in para and _DUAL_DISPUTE_COURT_RE.search(para) and _DUAL_DISPUTE_SELECTIVE_RE.search(para):
+                hit_dual_dispute = True
+                findings.append({
+                    "risk_name": "疑似“或裁或审”无效争议解决条款",
+                    "risk_message": "检测到同一争议解决段落同时约定仲裁与诉讼且含选择性连接词。依据《仲裁法司法解释》第7条，既约定仲裁又约定诉讼的，仲裁协议无效，请明确单一争议解决方式。",
+                })
+
+        if not hit_unclear_period:
+            for sentence in re.split(r"[。；;]+", para):
+                if sentence and _UNCLEAR_GUARANTEE_PERIOD_RE.search(sentence):
+                    hit_unclear_period = True
+                    findings.append({
+                        "risk_name": "疑似保证期间约定不明",
+                        "risk_message": "检测到保证期间约定为“直至主债务本息还清/履行完毕”等不确定期限。依据《民法典担保制度解释》第32条，约定直至主债务本息还清时为止等类似内容的，视为约定不明，保证期间依法为主债务履行期限届满之日起6个月，请明确具体期限。",
+                    })
+                    break
+
+    return findings
+
+
+def _finding_specificity(item):
+    """同主题去重优先级：具体缺陷（留空/占位/地区/冲突/主体原句核查）优先于通用未识别提示。"""
+    msg = item.get("risk_message", "")
+    if any(k in msg for k in ("原文“", "冲突", "留空", "占位", "地区名称", "识别边界")):
+        return 2
+    if "民法典" in msg:
+        return 1
+    return 0
+
+
+def deduplicate_findings(findings):
+    """按规则主题 risk_name 兜底去重，保留首次出现顺序，若后续同主题提示更具体则替换文案。"""
+    index_by_name = {}
+    deduped = []
+    for item in findings:
+        name = item["risk_name"]
+        if name not in index_by_name:
+            index_by_name[name] = len(deduped)
+            deduped.append(dict(item))
+        else:
+            idx = index_by_name[name]
+            if _finding_specificity(item) > _finding_specificity(deduped[idx]):
+                deduped[idx] = dict(item)
+    return deduped
 
 
 def print_report(risks):
@@ -355,11 +488,13 @@ def _extract_non_guarantor_roles(contract_text, forbidden_words):
     return roles
 
 
+_CANDIDATE_MODE_WORDS = ("连带责任保证", "连带保证", "一般保证", "连带清偿")
+
+
 def _analyze_guarantee_mode(contract_text):
     """内部候选分析：(明确类型或 None, 待复核原因或 None, 承诺主体/角色核查提示元组)。不是效力判断。
 
-    按句处理示例，不全局屏蔽正文；保留句内换行的条件/否定上下文及同段条件/备注字段守卫，同时支持无句号独立字段行。
-    核对显式保证人声明与债权人/债务人角色互斥，复杂主体与未支持表达保留人工核验。
+    支持一般保证、连带责任保证、连带保证、连带清偿四类明确表述，兼容标签式与条文叙述式。
     """
     guarantors = set(re.findall(
         r"(?:^|[。；;\n])\s*(?:保证人|担保人)\s*[:：]\s*([A-Za-z\u4e00-\u9fff·]{1,30})",
@@ -380,7 +515,7 @@ def _analyze_guarantee_mode(contract_text):
     for raw_sentence, block_qualified in _iter_guarantee_segments(contract_text):
         sentence = raw_sentence.rstrip("。；;")
         clause = re.sub(r"\s+", "", sentence)
-        if "一般保证" not in clause and "连带责任保证" not in clause:
+        if not any(w in clause for w in _CANDIDATE_MODE_WORDS):
             continue
         saw_candidate = True
         if any(word in clause for word in ("示例", "例句", "举例", "例如", "引用", "仅供参考", "非约束")):
@@ -394,53 +529,67 @@ def _analyze_guarantee_mode(contract_text):
         if any(word in normalized for word in uncertain_words) or len(guarantors) > 1:
             uncertain = True
             continue
-        normalized = re.sub(r"^正式约定[:：]", "", normalized)
-        commitment = re.fullmatch(
-            r"(?P<promisor>[A-Za-z\u4e00-\u9fff·]{1,30}?)向(?P<promisee>[A-Za-z\u4e00-\u9fff·]{1,30}?)"
-            r"承诺(?:对.+?(?:债务|借款))?承担(?P<mode>一般保证(?:责任)?|连带责任保证(?:责任)?)",
-            normalized,
-        )
-        if commitment:
-            promisor = commitment.group("promisor")
-            promisee = commitment.group("promisee")
-            if (not any(word in promisor for word in subject_forbidden_words)
-                    and not any(word in promisee for word in subject_forbidden_words)
-                    and (not guarantors or promisor not in guarantors or promisor in non_guarantor_roles)):
-                subject_prompts.append(
-                    f"原文“{raw_sentence}”中，作出承诺的是{promisor}。请对照合同所列保证人，核实{promisor}是否为本次审查的目标保证人，以及该承诺主体的身份是否一致。"
-                )
+        normalized = re.sub(r"^(?:第[一二三四五六七八九十百0-9.]+条)?(?:正式约定[:：])?", "", normalized)
+        sub_clauses = [normalized] if "，" not in normalized and "," not in normalized else [
+            re.sub(r"^(?:第[一二三四五六七八九十百0-9.]+条)?(?:正式约定[:：])?", "", part)
+            for part in re.split(r"[，,]+", normalized)
+            if any(w in part for w in _CANDIDATE_MODE_WORDS)
+        ]
+        if not sub_clauses:
             uncertain = True
             continue
-        field = re.fullmatch(r"保证方式[:：](一般保证|连带责任保证)(?:责任)?", normalized)
-        natural = re.fullmatch(
-            r"(?P<subject>[A-Za-z\u4e00-\u9fff·]{1,30}?)(?:对.+?(?:债务|借款))?承担"
-            r"(?P<mode>一般保证责任|连带责任保证(?:责任)?)", normalized,
-        )
-        if field:
-            if guarantors and any(g in non_guarantor_roles for g in guarantors):
+        for sub_norm in sub_clauses:
+            commitment = re.fullmatch(
+                r"(?P<promisor>[A-Za-z\u4e00-\u9fff·]{1,30}?)向(?P<promisee>[A-Za-z\u4e00-\u9fff·]{1,30}?)"
+                r"承诺(?:对.+?(?:债务|借款))?(?:承担|提供)(?P<mode>一般保证(?:责任)?|连带责任保证(?:责任)?|连带保证(?:责任)?|连带清偿(?:责任)?)",
+                sub_norm,
+            )
+            if commitment:
+                promisor = commitment.group("promisor")
+                promisee = commitment.group("promisee")
+                if (not any(word in promisor for word in subject_forbidden_words)
+                        and not any(word in promisee for word in subject_forbidden_words)
+                        and (not guarantors or promisor not in guarantors or promisor in non_guarantor_roles)):
+                    subject_prompts.append(
+                        f"原文“{raw_sentence}”中，作出承诺的是{promisor}。请对照合同所列保证人，核实{promisor}是否为本次审查的目标保证人，以及该承诺主体的身份是否一致。"
+                    )
                 uncertain = True
                 continue
-            mode_text = field.group(1)
-        elif natural:
-            subject = natural.group("subject")
-            if any(word in subject for word in ("向", "对", "承诺", "提供", "负责", "承担", "约定", "保证", "由")):
+            field = re.fullmatch(
+                r"(?:本合同(?:项下)?)?保证方式(?:为|[:：])(一般保证|连带责任保证|连带保证|连带清偿)(?:责任)?",
+                sub_norm,
+            )
+            natural = re.fullmatch(
+                r"(?P<subject>[A-Za-z\u4e00-\u9fff·]{1,30}?)(?:自愿|同意)?(?:对.+?(?:债务|借款|本息)|为.+?(?:债务|借款|本息))?"
+                r"(?:承担|提供)(?P<mode>一般保证(?:责任|担保)?|连带责任保证(?:责任)?|连带保证(?:责任|担保)?|连带清偿(?:责任|保证责任)?)",
+                sub_norm,
+            )
+            if field:
+                if guarantors and any(g in non_guarantor_roles for g in guarantors):
+                    uncertain = True
+                    continue
+                mode_text = field.group(1)
+            elif natural:
+                subject = natural.group("subject")
+                subject = re.sub(r"^(?:本合同(?:项下)?)?(?:保证人|担保人)(?=[A-Za-z\u4e00-\u9fff·]+$)", "", subject)
+                if any(word in subject for word in ("向", "对", "承诺", "提供", "负责", "承担", "约定", "保证", "由")):
+                    uncertain = True
+                    continue
+                if subject in non_guarantor_roles:
+                    role_label = non_guarantor_roles[subject]
+                    subject_prompts.append(
+                        f"原文“{raw_sentence}”中，承担保证责任的主体{subject}在合同中被列为{role_label}。债务人或债权人通常不能作为自身债务的保证人，请人工核实当事人身份及条款表述是否准确。"
+                    )
+                    uncertain = True
+                    continue
+                if guarantors and subject not in guarantors:
+                    uncertain = True
+                    continue
+                mode_text = natural.group("mode")
+            else:
                 uncertain = True
                 continue
-            if subject in non_guarantor_roles:
-                role_label = non_guarantor_roles[subject]
-                subject_prompts.append(
-                    f"原文“{raw_sentence}”中，承担保证责任的主体{subject}在合同中被列为{role_label}。债务人或债权人通常不能作为自身债务的保证人，请人工核实当事人身份及条款表述是否准确。"
-                )
-                uncertain = True
-                continue
-            if guarantors and subject not in guarantors:
-                uncertain = True
-                continue
-            mode_text = natural.group("mode")
-        else:
-            uncertain = True
-            continue
-        modes.add("explicit_general" if mode_text.startswith("一般保证") else "explicit_joint")
+            modes.add("explicit_general" if mode_text.startswith("一般保证") else "explicit_joint")
     if modes and any(re.match(r"^保证方式\s*[:：]\s*$", ln.strip()) for ln in contract_text.splitlines()):
         uncertain = True
     if len(modes) > 1:
@@ -461,7 +610,7 @@ def check_guarantee_terms(contract_text):
         "主债权金额",
         "保证方式",
         "保证范围",
-        "保证期间"
+        "保证期间",
     ]
 
     lines = contract_text.splitlines()
@@ -474,23 +623,20 @@ def check_guarantee_terms(contract_text):
         matching_lines = [
             line.strip()
             for line in lines
-            if line.strip().startswith(term + "：")
+            if re.match(rf"^{re.escape(term)}\s*[:：]", line.strip())
         ]
 
-        if not matching_lines:
-            if term != "保证方式":
+        if matching_lines:
+            if any(not re.split(r"[:：]", line, maxsplit=1)[1].strip() for line in matching_lines):
+                # 同一字段重复出现时，任意一处留空都不能被另一处非空掩盖。
+                empty_terms.append(term)
+        else:
+            # “保证方式”已统一由 check_contract 输出单条明确提示，避免双规则重复触发。
+            if term == "保证方式":
+                continue
+            pattern = _ELEMENT_PATTERNS.get(term)
+            if pattern is None or not pattern.search(contract_text):
                 missing_terms.append(term)
-            else:
-                mode, review_reason, subject_prompts = _analyze_guarantee_mode(contract_text)
-                # 条款冲突或已输出具体原句主体/角色核查提示时，不再叠加笼统的固定字段缺失提示。
-                if mode is None and review_reason != "conflict" and len(subject_prompts) != 1:
-                    missing_terms.append(term)
-        elif any(
-            not line.split("：", 1)[1].strip()
-            for line in matching_lines
-        ):
-            # 同一字段重复出现时，任意一处留空都不能被另一处非空掩盖。
-            empty_terms.append(term)
 
     return missing_terms, empty_terms
 

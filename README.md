@@ -49,6 +49,7 @@ flowchart TD
 | 跨行借款人自担保证 | 错误识别为明确连带保证 | 转人工核验 |
 | 同段条件字段割裂 | 错误识别为明确连带保证 | 转人工核验 |
 | B01：承诺主体待核实 | 2 条重复提示 | 1 条带原句及主体的精准提示 |
+| 复杂商事条文叙述型合同样本 | 4 项要素因缺冒号误报、保证方式双提示、无红线拦截 | 要素 0 误报、保证方式单条提示、4 条法定红线精准命中 |
 
 上述数字来自指定样本的历史对照及冻结版交付记录，不代表总体法律准确率、整体误报率或真实客户使用效果。工程测试通过也不等于法律标签已全部完成人工验收。
 
@@ -106,8 +107,8 @@ AI 默认为可选项。启用时使用 `配置AI接口.bat` 设置本机加密�
 # 统一离线回归入口（含送达地址回归）
 .\.venv\Scripts\python.exe run_checks.py
 
-# 保证方式专项
-.\.venv\Scripts\python.exe -m unittest -v test_guarantee_mode_regression test_guarantee_mode_boundaries
+# 保证方式专项与条文型合同/法定红线专项
+.\.venv\Scripts\python.exe -m unittest -v test_guarantee_mode_regression test_guarantee_mode_boundaries test_narrative_and_redlines
 
 # 本机 Web 与启动器
 .\.venv\Scripts\python.exe -m unittest -v test_web test_launchers
